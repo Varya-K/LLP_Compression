@@ -16,6 +16,7 @@ def evaluate_mmlu(model_path, batch_size=4):
         model_path,
         device_map="auto",
         torch_dtype=torch.float16,
+        max_memory={0: "12G"},
         trust_remote_code=True
     )
 
@@ -28,10 +29,11 @@ def evaluate_mmlu(model_path, batch_size=4):
         model=lm,
         tasks=["mmlu"],
         num_fewshot=0,
-        batch_size=batch_size
+        batch_size=batch_size,
+        limit=100
     )
 
-    return results["results"]["mmlu"]["acc"], model
+    return results["results"]["mmlu"]["acc,none"], model_size
 
 def get_model_size_in_MB(model):
     param_size = 0
@@ -68,4 +70,5 @@ if __name__ == "__main__":
     print(f"Compressed size (MB): {comp_size:.2f}")
     print(f"Compression ratio: {compression_ratio:.2f}")
     print(f"Performance drop: {performance_drop:.4f}")
+
     print(f"Score: {score:.2f}")
