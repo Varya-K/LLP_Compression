@@ -5,19 +5,21 @@
 ## Часть 1
 ### Сжатие модели
 
-В данной работе используется post-training квантование модели, реализованное с помощью библиотеки llmcompressor. Квантованию подвергаются все линейные слои модели, кроме выходного слоя lm_head. Для квантования используется схема FP8 Dynamic, при которой веса представляются в 8-битном формате с динамическим масштабированием.
+В данной работе применяется post-training квантование языковой модели с использованием библиотеки llmcompressor. Квантованию подвергаются все линейные слои модели, за исключением выходного слоя lm_head. В качестве метода квантования используется алгоритм AWQ (Activation-aware Weight Quantization) со схемой W4A16, при которой веса представляются в 4-битном целочисленном формате, а активации сохраняются в формате FP16. Квантование выполняется на основе калибровочного датасета без дополнительного дообучения модели.
 
-Чтобы сжать модель, необходимо запустить скрипт `compress.py`, в аргументах которого можно указать модель и директорию для сохранения полученных весов сжатой модели:
+Чтобы сжать модель, необходимо запустить скрипт `compress.py`, в аргументах которого можно указать модель, директорию для сохранения полученных весов сжатой модели, размер калибровочного датасета и максимальную длину последовательности для калибровки:
 
 ```
 python compress.py \
   --model_id Qwen/Qwen3-8B \
-  --output_dir Qwen3-8B-FP8-Dynamic
+  --output_dir Qwen3-8B-AWQ-INT4 \
+  --num_calibration_samples 128 \
+  --max_seq_length 1024
 ```
 
 Веса сжатой модели:
-- https://mega.nz/file/wMRTHCjJ#p-zdFx4pH1PMFBki7g7Ez9m5ceXWLpQDke_Jvli5Bow
-- [Varya-K/Qwen3-8B-FP8-Dynamic](https://huggingface.co/Varya-K/Qwen3-8B-FP8-Dynamic)
+- https://mega.nz/file/rF8zhajA#QC9DdOxpE2CpFgUIrj7q9Ei2Z2GQdogt6l-5vkgXqdc
+- [Varya-K/Qwen3-8B-AWQ-INT4](https://huggingface.co/Varya-K/Qwen3-8B-AWQ-INT4)
 
 ### Оценка компрессии модели
 
@@ -36,3 +38,13 @@ $$ Score = \frac{Compression \quad Ratio}{1 + Performance \quad Drop}​ $$
 Для расчета описанных метрик необходимо запустить скрипт `evaluate_models.py`: `python evaluate_models.py`
 
 Результаты оценки компресии:
+```
+==== RESULTS ====
+Baseline accuracy: 0.754211
+Compressed accuracy: 0.734737
+Baseline size (MB): 15622.5881
+Compressed size (MB): 5790.0920
+Compression ratio: 2.6982
+Performance drop: 0.025820
+Score: 2.630286
+```
