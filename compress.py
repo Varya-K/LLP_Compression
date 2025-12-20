@@ -10,7 +10,7 @@ from data_categories import subcategories
 
 
 COLUMN_NAMES = ["question", "A", "B", "C", "D", "answer"]
-DATASET_BASE_URL = "https://huggingface.co/datasets/Varya-K/MMLU_data/resolve/main"
+DATASET_BASE_URL = "https://huggingface.co/datasets/Varya-K/MMLU_data/resolve/main/test"
 
 
 def parse_args():
@@ -29,13 +29,6 @@ def parse_args():
         help="Where to save quantized model"
     )
     parser.add_argument(
-        "--dataset_split",
-        type=str,
-        default="test",
-        choices=["train", "test"],
-        help="MMLU split to use for calibration"
-    )
-    parser.add_argument(
         "--num_calibration_samples",
         type=int,
         default=128,
@@ -51,13 +44,13 @@ def parse_args():
     return parser.parse_args()
 
 
-def load_calibration_dataset(split: str, limit: int):
+def load_calibration_dataset(limit: int):
     datasets = []
 
     for subcat in subcategories:
         ds = load_dataset(
             "csv",
-            data_files=f"{DATASET_BASE_URL}/{split}/{subcat}_{split}.csv",
+            data_files=f"{DATASET_BASE_URL}/{subcat}_test.csv",
             split="train",
             column_names=COLUMN_NAMES,
         )
@@ -100,7 +93,6 @@ def main():
 
     print("Loading calibration dataset...")
     ds = load_calibration_dataset(
-        split=args.dataset_split,
         limit=args.num_calibration_samples
     )
 
