@@ -4,7 +4,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
 
 BASELINE_MODEL_PATH = "Qwen/Qwen3-8B"
-COMPRESSED_MODEL_PATH = "Varya-K/Qwen3-8B-FP8-Dynamic"
+COMPRESSED_MODEL_PATH = "Varya-K/Qwen3-8B-AWQ-INT4"
 
 def evaluate_mmlu(model_path, batch_size=4):
     tokenizer = AutoTokenizer.from_pretrained(
@@ -16,7 +16,6 @@ def evaluate_mmlu(model_path, batch_size=4):
         model_path,
         device_map="auto",
         torch_dtype=torch.float16,
-        max_memory={0: "12G"},
         trust_remote_code=True
     )
 
@@ -51,24 +50,24 @@ def get_model_size_in_MB(model):
 if __name__ == "__main__":
     print("Evaluating baseline model...")
     baseline_acc, baseline_size = evaluate_mmlu(BASELINE_MODEL_PATH)
-    print(f"Baseline accuracy: {baseline_acc:.4f}")
-    print(f"Baseline size (MB): {baseline_size:.2f}")
+    print(f"Baseline accuracy: {baseline_acc:.6f}")
+    print(f"Baseline size (MB): {baseline_size:.4f}")
 
     print("Evaluating compressed model...")
     comp_acc, comp_size = evaluate_mmlu(COMPRESSED_MODEL_PATH)
-    print(f"Compressed accuracy: {comp_acc:.4f}")
-    print(f"Compressed size (MB): {comp_size:.2f}")
+    print(f"Compressed accuracy: {comp_acc:.6f}")
+    print(f"Compressed size (MB): {comp_size:.4f}")
 
     compression_ratio = baseline_size / comp_size
     performance_drop = (baseline_acc - comp_acc) / baseline_acc
     score = compression_ratio / (1 + performance_drop)
 
     print("\n==== RESULTS ====")
-    print(f"Baseline accuracy: {baseline_acc:.4f}")
-    print(f"Compressed accuracy: {comp_acc:.4f}")
-    print(f"Baseline size (MB): {baseline_size:.2f}")
-    print(f"Compressed size (MB): {comp_size:.2f}")
-    print(f"Compression ratio: {compression_ratio:.2f}")
-    print(f"Performance drop: {performance_drop:.4f}")
+    print(f"Baseline accuracy: {baseline_acc:.6f}")
+    print(f"Compressed accuracy: {comp_acc:.6f}")
+    print(f"Baseline size (MB): {baseline_size:.4f}")
+    print(f"Compressed size (MB): {comp_size:.4f}")
+    print(f"Compression ratio: {compression_ratio:.4f}")
+    print(f"Performance drop: {performance_drop:.6f}")
 
-    print(f"Score: {score:.2f}")
+    print(f"Score: {score:.6f}")
