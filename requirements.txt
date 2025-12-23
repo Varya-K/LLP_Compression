@@ -6,3 +6,4 @@ llmcompressor==0.8.1
 datasets
 scipy==1.14.1
 lm-eval
+peft
