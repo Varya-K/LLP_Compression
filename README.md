@@ -48,3 +48,29 @@ Compression ratio: 2.6982
 Performance drop: 0.025820
 Score: 2.630286
 ```
+
+## Часть 2
+### Fine-tuning модели
+
+Для fine-tuning модели была использована LoRA на датасете MMLU. Необходимо запустить скрипт `train.py`:
+```
+python train.py \
+    --model_path "Varya-K/Qwen3-8B-AWQ-INT4" \
+    --output_dir "Qwen3-8B-AWQ-INT4-TUNED" \
+    --num_train_epochs 3 \
+    --learning_rate 1e-3
+```
+
+Веса зафайнтюниной сжатой модели: [Varya-K/Qwen3-8B-AWQ-INT4-TUNED](https://huggingface.co/Varya-K/Qwen3-8B-AWQ-INT4-TUNED)
+
+Результаты оценки:
+```
+==== RESULTS ====
+Baseline accuracy: 0.754211
+Tenude compressed accuracy: 0.746273
+Baseline size (MB): 15622.5881
+Tuned compressed size (MB): 5790.0920
+Compression ratio: 2.6982
+Performance drop: 0.010524
+Score: 2.670058
+```
